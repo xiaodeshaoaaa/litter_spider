@@ -1,0 +1,41 @@
+import requests
+import json
+import sys
+
+
+class FanYi:
+
+    def __init__(self,query_string):
+        self.query_string = query_string
+        self.post_url = "http://fanyi.baidu.com/v2transapi"
+        self.headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36"}
+        self.post_data = {
+            "from":"zh",
+            "to":"en",
+            "query":query_string,
+            "transtype":"translang",
+            "simple_means_flag":"3",
+        }
+
+    def parse_url(self):
+        r = requests.post(self.post_url,data=self.post_data,headers=self.headers)
+        return r.content.decode()
+
+    def get_ret(self,json_response):
+        dict_response = json.loads(json_response)
+        ret = dict_response["trans_result"]["data"][0]['dst']
+        print("{}的翻译结果是：{}".format(self.query_string,ret))
+
+
+
+    def run(self):
+        json_response = self.parse_url()
+        self.get_ret(json_response)
+
+
+if __name__ == '__main__':
+    query_string = input("请输入要翻译的内容：")
+    # print(sys.argv)
+    # query_string = sys.argv[1]
+    baidu_fanyi = FanYi(query_string)
+    baidu_fanyi.run()
